@@ -48,3 +48,9 @@ public:
     virtual bool IsMenuOpen(int iSlot) = 0;
 	virtual void DisplayPlayerMenu(Menu& hMenu, int iSlot, bool bClose = true, bool bReset = true) = 0;
 };
+
+struct MenuInfo
+{
+    Menu hMenu;
+    int iSlot;
+};

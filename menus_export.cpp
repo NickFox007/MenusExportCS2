@@ -21,6 +21,8 @@ IVEngineServer *engine = NULL;
 ICvar *icvar = NULL;
 IMenusApi* g_pMenus;
 
+std::vector<MenuInfo> mMenuInfos;
+
 CGlobalVars *GetGameGlobals()
 {
 	INetworkGameServer *server = g_pNetworkServerService->GetIGameServer();
@@ -89,6 +91,95 @@ EXPORTDLL bool MenusApi_IsMenuOpen(int iSlot)
 	return g_pMenus->IsMenuOpen(iSlot);	
 }
 
+// Menu& hMenu, 
+ EXPORTDLL void MenusApi_AddItemMenu(const char* sBack, const char* sText, int iType = 1)
+{    
+    auto &hMenu = mMenuInfos.back().hMenu;
+    g_pMenus->AddItemMenu(hMenu, sBack, sText, iType);
+}
+
+EXPORTDLL void MenusApi_SetExitMenu(bool bExit)
+{
+    //Menu hMenu = mMenuInfos.back().hMenu;
+    auto &hMenu = mMenuInfos.back().hMenu;
+    //char text[64];
+	//V_strncpy(text, "Settings ExitMenu param...", 64);
+	//ConColorMsg(Color(255, 0, 0, 255), "[MenusExport] %s\n", text);
+	g_pMenus->SetExitMenu(hMenu, bExit);
+}
+
+
+EXPORTDLL void MenusApi_SetBackMenu(bool bBack)
+{
+    //Menu hMenu = mMenuInfos.back().hMenu;
+    auto &hMenu = mMenuInfos.back().hMenu;
+	g_pMenus->SetBackMenu(hMenu, bBack);
+}
+
+
+EXPORTDLL void MenusApi_SetTitleMenu(const char* szTitle)
+{
+    //Menu hMenu = mMenuInfos.back().hMenu;
+    //char text[64];
+    //V_strncpy(text, "Setting new menu title...", 64);
+	//ConColorMsg(Color(255, 0, 0, 255), "[MenusExport] %s\n", text);
+    auto &hMenu = mMenuInfos.back().hMenu;
+	g_pMenus->SetTitleMenu(hMenu, szTitle);
+}
+
+
+// const char* szBack, const char* szFront, int iItem, int iSlot
+typedef void (*MenuCallbackFunc2)(const char*, const char*, int iItem, int iSlot);
+EXPORTDLL void MenusApi_SetCallback(MenuCallbackFunc2 func)
+{
+    //Menu *hMenu = mMenuInfos.back().hMenu;
+    auto &hMenu = mMenuInfos.back().hMenu;
+    //char text[64];
+    //V_strncpy(text, "Setting new menu callback...", 64);
+	//ConColorMsg(Color(255, 0, 0, 255), "[MenusExport] %s\n", text);
+    
+    MenuCallbackFunc callback = [func](const char* szBack, const char* szFront, int iItem, int iSlot)
+    {
+        func(szBack, szFront, iItem, iSlot);
+    };
+	g_pMenus->SetCallback(hMenu, func);
+}
+
+
+EXPORTDLL void MenusApi_DisplayPlayerMenu(int iSlot, bool bClose = true, bool bReset = true)
+{
+    //Menu hMenu = mMenuInfos.back().hMenu;
+    auto &hMenu = mMenuInfos.back().hMenu;
+	g_pMenus->DisplayPlayerMenu(hMenu, iSlot, bClose, bReset);
+    //char text[64];
+    //V_strncpy(text, "Setting menu to player...", 64);
+	//ConColorMsg(Color(255, 0, 0, 255), "[MenusExport] %s (%s)\n", text, hMenu.hItems[0].sText.c_str());
+}
+
+
+
+EXPORTDLL void MenusApi_NewMenuInstance(int iSlot)
+{
+    Menu hMenu;
+    MenuInfo menuInfo;
+    menuInfo.hMenu = hMenu;
+    menuInfo.iSlot = iSlot;
+    mMenuInfos.push_back(menuInfo);
+}
+
+EXPORTDLL void MenusApi_Clear(int iSlot)
+{
+    for(int i = mMenuInfos.size() - 1; i >= 0; i++)
+        if(mMenuInfos[i].iSlot == iSlot)
+            mMenuInfos.erase(mMenuInfos.begin() + i);
+}
+
+/*
+EXPORTDLL std::string MenusApi_escapeString(const std::string& input)
+{
+	return g_pMenus->escapeString(input);
+}*/
+
 
 const char *Plugin::GetLicense()
 {
@@ -97,7 +188,7 @@ const char *Plugin::GetLicense()
 
 const char *Plugin::GetVersion()
 {
-	return "0.2";
+	return "0.3";
 }
 
 const char *Plugin::GetDate()
