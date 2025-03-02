@@ -169,7 +169,7 @@ EXPORTDLL void MenusApi_NewMenuInstance(int iSlot)
 
 EXPORTDLL void MenusApi_Clear(int iSlot)
 {
-    for(int i = mMenuInfos.size() - 1; i >= 0; i++)
+    for(int i = mMenuInfos.size() - 1; i >= 0; i--)
         if(mMenuInfos[i].iSlot == iSlot)
             mMenuInfos.erase(mMenuInfos.begin() + i);
 }
@@ -188,7 +188,7 @@ const char *Plugin::GetLicense()
 
 const char *Plugin::GetVersion()
 {
-	return "0.3";
+	return "0.3.1";
 }
 
 const char *Plugin::GetDate()
