@@ -188,7 +188,7 @@ const char *Plugin::GetLicense()
 
 const char *Plugin::GetVersion()
 {
-	return "0.3.1";
+	return "0.3.2";
 }
 
 const char *Plugin::GetDate()
